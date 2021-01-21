@@ -1,28 +1,76 @@
 import * as React from 'react';
-import { View } from 'react-native';
-import { Button, Paragraph, Dialog } from 'react-native-paper';
+import { View, TextInput } from 'react-native';
+import { Button, } from 'react-native-elements';
+import { Dialog, Portal } from 'react-native-paper';
+import Ordinateur from '../Database';
 
-const MyComponent = () => {
-  const [visible, setVisible] = React.useState(false);
+class MyComponent extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      visible: false,
+      text: '',
+    }
+  }
 
-  const showDialog = () => setVisible(true);
+  showDialog = () => {
+    this.setState({
+      visible: true
+    })
+  }
 
-  const hideDialog = () => setVisible(false);
+  hideDialog = () => {
+    this.setState({
+      visible: false
+    })
+  }
 
-  return (
-    <View>
-      <Button onPress={showDialog}>Show Dialog</Button>
-        <Dialog visible={visible} onDismiss={hideDialog}>
-          <Dialog.Title>Alert</Dialog.Title>
-          <Dialog.Content>
-            <Paragraph>This is simple dialog</Paragraph>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={hideDialog}>Done</Button>
-          </Dialog.Actions>
-        </Dialog>
-    </View>
-  );
-};
+  handleChangeInput = (event) => {
+    this.setState({
+      text: event
+    })
+  }
+
+  newItem = async () => {
+
+    const data = {
+      name: this.state.text
+    }
+
+    const add = await Ordinateur.create(data)
+    this.props.onSelectOrdi(add);
+
+    this.setState({
+      visible: false
+    })
+
+  }
+
+
+  render() {
+
+
+    return (
+      <View>
+        <Button title="Add ordi" onPress={this.showDialog}></Button>
+
+        <Portal>
+          <Dialog visible={this.state.visible} onDismiss={this.hideDialog}>
+            <Dialog.Title>Ajoute un ordinateur</Dialog.Title>
+            <Dialog.Content>
+              <TextInput
+                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                onChangeText={this.handleChangeInput}
+                value={this.state.text}
+              />
+              <Button title="ajout d'ordi" onPress={this.newItem}>ajout d'ordi</Button>
+
+            </Dialog.Content>
+          </Dialog>
+        </Portal>
+      </View>
+    )
+  }
+}
 
 export default MyComponent;

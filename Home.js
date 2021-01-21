@@ -3,11 +3,12 @@
 import React, { useCallback, useState } from 'react'
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View, Button } from 'react-native'
 import Ordinateur from './Database'
+import User from './models/Users'
 
 export default function App({ navigation }) {
     const [ordinateurs, setPeople] = useState([])
     const createTable = useCallback(async () => {
-        await Ordinateur.createTable()
+        await User.createTable()
         console.log('Table created successfully')
     }, [])
 
@@ -15,11 +16,11 @@ export default function App({ navigation }) {
         const options = {
             columns: 'id, name',
             order: 'name ASC'
-          }
-          
-           
-          const test = await Ordinateur.query(options)
-          console.log(test)
+        }
+
+
+        const test = await Ordinateur.query(options)
+        console.log(test)
     }, [])
 
     //   if (Platform.OS === 'web') {
@@ -30,13 +31,10 @@ export default function App({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={{ padding: 20 }} onPress={createTable}>
-                <Text>Create table</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{ padding: 20 }} onPress={createOrdinateur}>
-                <Text>Create person</Text>
-            </TouchableOpacity>
             <ScrollView style={{ flex: 1 }}>
+                <TouchableOpacity style={{ padding: 20 }} onPress={createTable}>
+                    <Text>Create person</Text>
+                </TouchableOpacity>
                 {
                     ordinateurs.map(ordinateur => <Text key={ordinateur.id}>{JSON.stringify(ordinateur)}</Text>)
                 }
@@ -44,6 +42,10 @@ export default function App({ navigation }) {
             <Button
                 title="Ordinateurs"
                 onPress={() => navigation.navigate('Ordinateurs')}
+            />
+            <Button
+                title="Users"
+                onPress={() => navigation.navigate('Users')}
             />
         </View>
     );
