@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { View, TextInput } from 'react-native';
-import { Button, } from 'react-native-elements';
-import { Dialog, Portal } from 'react-native-paper';
-import Ordinateur from '../Database';
-
+import { Dialog, Portal, Button } from 'react-native-paper';
+import Ordinateur from '../models/Ordinateurs';
 class MyComponent extends React.Component {
   constructor(props) {
     super(props)
@@ -52,18 +50,17 @@ class MyComponent extends React.Component {
 
     return (
       <View>
-        <Button title="Add ordi" onPress={this.showDialog}></Button>
+        <Button mode="outlined" icon='plus' color='green' onPress={this.showDialog}> Ajouter un ordinateur</Button>
 
         <Portal>
           <Dialog visible={this.state.visible} onDismiss={this.hideDialog}>
-            <Dialog.Title>Ajoute un ordinateur</Dialog.Title>
             <Dialog.Content>
               <TextInput
                 style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                 onChangeText={this.handleChangeInput}
                 value={this.state.text}
               />
-              <Button title="ajout d'ordi" onPress={this.newItem}>ajout d'ordi</Button>
+              <Button style={{ marginTop: 30 }} mode='outlined' onPress={this.newItem}>ajouter l'ordinateur</Button>
 
             </Dialog.Content>
           </Dialog>

@@ -1,11 +1,11 @@
-import React, { useCallback } from 'react';
-import { View, StyleSheet, Button, TouchableOpacity, Text } from 'react-native';
-import Ordinateur from './Database';
-import { Card } from 'react-native-elements'
-import { Title } from 'react-native-paper';
+import React from 'react';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import { Title, Button } from 'react-native-paper';
 import AddOrdi from './components/AddOrdi';
 import Attribution from './models/Attributions';
 import * as SQLite from 'expo-sqlite'
+import CardOrdi from './components/CardOrdi';
+import Ordinateur from './models/Ordinateurs';
 const db = SQLite.openDatabase('gao-react.db'); // returns Database object
 
 class Ordinateurs extends React.Component {
@@ -21,18 +21,50 @@ class Ordinateurs extends React.Component {
 
     this.getDatas();
   }
-  async getDatas() {
-    let array = []
+
+  getDatas = async () => {
     await Ordinateur.createTable();
-    const options = {
-      columns: 'name, id',
-      order: 'name ASC'
-    }
-    const createdOrdinateurs = await Ordinateur.query(options);
-    createdOrdinateurs.forEach(ordi => {
-      array.push(ordi)
+    await Attribution.createTable();
+
+    let array = [];
+
+    db.transaction(tx => {
+      tx.executeSql('SELECT * FROM ordinateurs;', null,
+        (txObj, { rows }) => {
+          for (let i = 0; i < rows.length; i++) {
+            let attributions = [];
+
+            let data = {
+              id: rows.item(i).id,
+              name: rows.item(i).name,
+              attributions: attributions
+            }
+            array.push(data)
+          }
+
+
+
+          tx.executeSql('SELECT users.nameUser, attributions.id, ordinateurs.name, attributions.heure FROM ordinateurs LEFT OUTER JOIN attributions ON ordinateurs.id = attributions.ordinateur_id LEFT OUTER JOIN users ON attributions.user_id = users.id;', null,
+            (txObj, { rows }) => {
+              let finalArray = array.slice();
+              rows._array.forEach((attribution, i) => {
+                finalArray.forEach(ordinateur => {
+                  if (attribution.id != null && attribution.name == ordinateur.name) {
+                    ordinateur.attributions.push(attribution)
+                  }
+                })
+
+
+              })
+              this.setState({ ordinateurs: finalArray });
+
+            })
+
+
+
+        })
+
     })
-    this.setState({ ordinateurs: array })
 
   }
 
@@ -42,6 +74,7 @@ class Ordinateurs extends React.Component {
     this.setState({ ordinateurs: array });
 
   }
+
 
   delete = (id) => {
     db.transaction(tx => {
@@ -58,62 +91,51 @@ class Ordinateurs extends React.Component {
           }
         })
     })
+
   }
 
-  newAttribution = async () => {
-
-    const data = {
-      id_user: 1,
-      id_ordinateur: 1
-    }
-
-    console.log(data);
-    // const add = await Attribution.create(data)
-    // this.props.onSelectOrdi(add);
-
-    // this.setState({
-    //   visible: false
-    // })
-
+  deleteOrdi = (id) => {
+   this.getDatas();
   }
 
 
   render() {
 
     return (
-      <View style={styles.container}>
-        <View>
-          <Button
-            title="Home"
-            onPress={() => this.props.navigation.navigate('Home')}
-          />
-          <Button title="ajout d'attribution" onPress={this.newAttribution}>ajout d'attribution</Button>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.contentContainer}
+      >
+        <View style={styles.container}>
 
+          <Title style={{ fontSize: 30, marginBottom: 10, marginTop: 20 }}>
+            <Button
+              icon='home'
+              mode="text"
+              onPress={() => this.props.navigation.navigate('Home')}
+            >
+              Accueil
+            </Button>
+          </Title>
+
+
+
+          <Title style={{ fontSize: 30, marginBottom: 30 }}> Les ordinateurs</Title>
           <AddOrdi onSelectOrdi={this.handleOrdi} ordinateurs={this.state.ordinateurs} text={this.state.text} />
-        </View>
 
-
-
-        <Title> Les ordinateurs</Title>
-        {
-          this.state.ordinateurs && this.state.ordinateurs.map(data =>
-          (
-            <Card>
-              <Card.Title>{data.name}</Card.Title>
-              <Card.Divider />
-
-              <View key={data.id} style={styles.user}>
+          {
+            this.state.ordinateurs.map((data, i) =>
+            (
+              <View key={i}>
+                <CardOrdi onSelectOrdinateur={this.deleteOrdi} item={data} />
               </View>
-              <TouchableOpacity onPress={() => this.delete(data.id)}>
-                <Text> DEL </Text>
-              </TouchableOpacity>
-            </Card>
-          )
-          )
-        }
+            )
+            )
+          }
 
 
-      </View>
+        </View>
+      </ScrollView>
     )
   }
 }
@@ -124,9 +146,17 @@ const styles = StyleSheet.create({
     zIndex: 0,
     flex: 1,
     backgroundColor: '#fff',
-    // alignItems: 'center',
-    // justifyContent: 'center',
+    justifyContent: 'center',
     paddingTop: 40,
+    paddingBottom: 40,
+
+  },
+
+  scrollView: {
+    height: '100%',
+    width: '100%',
+    margin: 20,
+    alignSelf: 'center',
   },
 
 

@@ -1,62 +1,75 @@
-// Styles are removed purpose-fully
+import React, { useRef } from "react";
+import { DrawerLayoutAndroid, Text, StyleSheet, View } from "react-native";
+import { IconButton, Button } from "react-native-paper";
 
-import React, { useCallback, useState } from 'react'
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View, Button } from 'react-native'
-import Ordinateur from './Database'
-import User from './models/Users'
+const App = ({ navigation }) => {
+    const drawer = useRef(null);
 
-export default function App({ navigation }) {
-    const [ordinateurs, setPeople] = useState([])
-    const createTable = useCallback(async () => {
-        await User.createTable()
-        console.log('Table created successfully')
-    }, [])
-
-    const createOrdinateur = useCallback(async () => {
-        const options = {
-            columns: 'id, name',
-            order: 'name ASC'
-        }
-
-
-        const test = await Ordinateur.query(options)
-        console.log(test)
-    }, [])
-
-    //   if (Platform.OS === 'web') {
-    //     return <View style={styles.container}>
-    //       <Text>Not supported in web platform</Text>
-    //     </View>
-    //   }
-
-    return (
-        <View style={styles.container}>
-            <ScrollView style={{ flex: 1 }}>
-                <TouchableOpacity style={{ padding: 20 }} onPress={createTable}>
-                    <Text>Create person</Text>
-                </TouchableOpacity>
-                {
-                    ordinateurs.map(ordinateur => <Text key={ordinateur.id}>{JSON.stringify(ordinateur)}</Text>)
-                }
-            </ScrollView>
+    const navigationView = () => (
+        <View style={[styles.containerDraw, styles.navigationContainer]}>
+            <Text style={styles.paragraph}>G - A - O</Text>
             <Button
-                title="Ordinateurs"
-                onPress={() => navigation.navigate('Ordinateurs')}
-            />
+                mode="text"
+                onPress={() => navigation.navigate('Ordinateurs', { option: "update" })}
+            >
+                Liste ordis
+            </Button>
+            <View style={styles.separator} />
             <Button
-                title="Users"
+                mode="text"
                 onPress={() => navigation.navigate('Users')}
-            />
+            >
+                Liste utilisateurs
+            </Button>
         </View>
     );
-}
+
+    return (
+        <DrawerLayoutAndroid
+            ref={drawer}
+            drawerWidth={300}
+            drawerPosition="left"
+            renderNavigationView={navigationView}
+        >
+            <View style={styles.container}>
+                <Text style={styles.paragraph}>
+                    GESTION D'ATTRIBUTION D'ORDINATEURS
+                </Text>
+                <IconButton
+                    icon="menu"
+                    color='purple'
+                    onPress={() => drawer.current.openDrawer()}
+                />
+            </View>
+        </DrawerLayoutAndroid>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingTop: 40,
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 16
+    },
+    containerDraw: {
+        flex: 1,
+        paddingTop: 16,
+
+    },
+    navigationContainer: {
+        backgroundColor: "#ecf0f1"
+    },
+    paragraph: {
+        padding: 16,
+        fontSize: 30,
+        textAlign: "center"
+    },
+    separator: {
+        marginVertical: 8,
+        borderBottomColor: '#737373',
+        borderBottomWidth: StyleSheet.hairlineWidth,
     },
 });
+
+export default App;

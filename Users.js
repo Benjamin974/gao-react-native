@@ -1,14 +1,14 @@
 import * as React from 'react';
-import { View, TextInput, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { Button, Card } from 'react-native-elements';
+import { View, TextInput, StyleSheet } from 'react-native';
+import { Card } from 'react-native-elements';
 import User from './models/Users';
-import { IconButton, List, Title } from 'react-native-paper';
+import { Button, IconButton, Title } from 'react-native-paper';
 import * as SQLite from 'expo-sqlite'
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { ScrollView } from 'react-native-gesture-handler';
 const db = SQLite.openDatabase('gao-react.db'); // returns Database object
 
 
-class MyComponent extends React.Component {
+class Users extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -31,7 +31,7 @@ class MyComponent extends React.Component {
     let array = []
     await User.createTable();
     const options = {
-      columns: 'name, id',
+      columns: 'nameUser, id',
       order: 'id ASC'
     }
     const getUsers = await User.query(options);
@@ -45,11 +45,10 @@ class MyComponent extends React.Component {
   newItem = async () => {
 
     const data = {
-      name: this.state.text
+      nameUser: this.state.text
     }
 
     const add = await User.create(data)
-
     let array = this.state.users.slice();
     array.push(add);
     this.setState({ users: array });
@@ -77,39 +76,57 @@ class MyComponent extends React.Component {
 
 
     return (
-      <View style={styles.container}>
-        <TextInput
-          style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-          onChangeText={this.handleChangeInput}
-          value={this.state.text}
-        />
-        <Button title="ajout d'utilisateur" onPress={this.newItem}>ajout d'utilisateur</Button>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.contentContainer}
+      >
+        <View style={styles.container}>
+          <Title style={{ fontSize: 30, marginBottom: 10, marginTop: 20 }}>
+            <Button
+              icon='home'
+              mode="text"
+              onPress={() => this.props.navigation.navigate('Home')}
+            >
+              Accueil
+            </Button>
+          </Title>
+          <Card style={{ padding: 30 }}>
+            <Title> Ajouter un utilisateur </Title>
 
-        <Title> Liste des utilisateurs </Title>
-        {
-          this.state.users && this.state.users.map(data =>
-          (
-            <View style={styles.row}>
-              <Card.Title>{data.name}</Card.Title>
-              <IconButton
-                icon="delete"
-                color={Colors.red500}
-                size={20}
-                onPress={() => this.delete(data.id)}
-              />
-              <View key={data.id} style={styles.user}>
-              </View>
+            <TextInput
+              style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+              onChangeText={this.handleChangeInput}
+              value={this.state.text}
+            />
+            <Button style={{ marginTop: 30 }} mode='outlined' icon='plus' color='green' onPress={this.newItem}>ajouter</Button>
+          </Card>
+          <Title style={{ fontSize: 30, marginBottom: 30, marginTop: 30 }}> Liste des utilisateurs </Title>
 
-            </View>
-          )
-          )
-        }
-      </View>
+          {
+            this.state.users && this.state.users.map((data, i) =>
+            (
+              <Card>
+                <View style={styles.row} key={i}>
+                  <Card.Title>{data.nameUser}</Card.Title>
+                  <IconButton
+                    icon="delete"
+                    color='red'
+                    size={20}
+                    onPress={() => this.delete(data.id)}
+                  />
+
+                </View>
+              </Card>
+            )
+            )
+          }
+        </View>
+      </ScrollView>
     )
   }
 }
 
-export default MyComponent;
+export default Users;
 
 const styles = StyleSheet.create({
   container: {
@@ -117,6 +134,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     paddingTop: 40,
+    paddingBottom: 40,
   },
 
   titleCenter: {
@@ -127,8 +145,8 @@ const styles = StyleSheet.create({
 
   row: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
 
   },
 
@@ -146,5 +164,12 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     marginLeft: '10px',
     marginRight: '10px'
-  }
+  },
+
+  scrollView: {
+    height: '100%',
+    width: '100%',
+    margin: 20,
+    alignSelf: 'center',
+  },
 });
