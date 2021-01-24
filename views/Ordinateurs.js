@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Title, Button } from 'react-native-paper';
-import AddOrdi from './components/AddOrdi';
-import Attribution from './models/Attributions';
+import AddOrdi from '../components/AddOrdi';
+import Attribution from '../models/Attributions';
 import * as SQLite from 'expo-sqlite'
-import CardOrdi from './components/CardOrdi';
-import Ordinateur from './models/Ordinateurs';
+import CardOrdi from '../components/CardOrdi';
+import Ordinateur from '../models/Ordinateurs';
 const db = SQLite.openDatabase('gao-react.db'); // returns Database object
 
 class Ordinateurs extends React.Component {
@@ -122,7 +122,6 @@ class Ordinateurs extends React.Component {
 
           <Title style={{ fontSize: 30, marginBottom: 30 }}> Les ordinateurs</Title>
           <AddOrdi onSelectOrdi={this.handleOrdi} ordinateurs={this.state.ordinateurs} text={this.state.text} />
-
           {
             this.state.ordinateurs.map((data, i) =>
             (

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
 import { Card } from 'react-native-elements';
-import User from './models/Users';
+import User from '../models/Users';
 import { Button, IconButton, Title } from 'react-native-paper';
 import * as SQLite from 'expo-sqlite'
 import { ScrollView } from 'react-native-gesture-handler';
@@ -105,8 +105,8 @@ class Users extends React.Component {
           {
             this.state.users && this.state.users.map((data, i) =>
             (
-              <Card>
-                <View style={styles.row} key={i}>
+              <Card key={i}>
+                <View style={styles.row}>
                   <Card.Title>{data.nameUser}</Card.Title>
                   <IconButton
                     icon="delete"

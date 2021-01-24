@@ -90,7 +90,7 @@ class CardOrdi extends React.Component {
 
   }
 
-  delete = async(id) => {
+  delete = async (id) => {
     const add = await Ordinateur.destroy(id)
     this.props.onSelectOrdinateur(id)
 
@@ -101,7 +101,7 @@ class CardOrdi extends React.Component {
 
       <View>
         <Card>
-          <IconButton onPress={() => this.delete(this.props.item.id)} icon="delete" color='red' > </IconButton>
+          <Card.Title style={{ textAlign:'right' }}><IconButton onPress={() => this.delete(this.props.item.id)} icon="delete" color='red' > </IconButton></Card.Title>
 
           <Card.Title>{this.props.item.name}</Card.Title>
           <Card.Divider />
@@ -110,7 +110,7 @@ class CardOrdi extends React.Component {
             <ListItem key={i} bottomDivider>
               <ListItem.Content>
                 <ListItem.Title>{item.attribution.nom}</ListItem.Title>
-                <ListItem.Subtitle>{item.index}</ListItem.Subtitle>
+                <ListItem.Subtitle>{item.index} h</ListItem.Subtitle>
               </ListItem.Content>
               { item.attribution ? <DeleteAttr ordinateur={this.props.item} attribution={item.attribution} heure={item.index} onSelectAttribution={this.deleteAttribution} /> : <AddAttr onSelectAttribution={this.handleAttribution} item={this.props.item} heure={item.index} />
               }
